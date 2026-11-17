@@ -3,6 +3,14 @@
 **Disciplina:** Disruptive Architectures: IoT, IoB & Generative IA  
 **Tema da Global Solution:** CitizenTech
 
+## Simulação do circuito no Tinkercad
+
+**[Abrir circuito compartilhado da Tomada Vital no Tinkercad](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=KehezaO_vzByj0qiHezNVwroZzdfyHgXVT1UZCgLfPk)**
+
+O circuito contém a montagem Arduino UNO com os componentes e o código usados nos testes da Global Solution. Para reproduzir os cenários, utilize o interruptor deslizante, o potenciômetro e o Monitor Serial, seguindo as instruções deste README e os [registros dos testes](evidencias/README.md).
+
+> Link de compartilhamento fornecido pela equipe. Confirme que ele abre em uma janela anônima antes da entrega, pois links de colaboração podem ter restrições ou expirar.
+
 ## Proposta
 
 A Tomada Vital é uma proposta de monitoramento de quedas de energia em equipamentos médicos que dependem de alimentação elétrica. O protótipo demonstra, com um **Arduino UNO simulado no Tinkercad**, como identificar uma queda, estimar a autonomia de uma bateria e sinalizar a prioridade do evento.
