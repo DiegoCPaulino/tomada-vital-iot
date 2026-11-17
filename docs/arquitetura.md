@@ -3,33 +3,57 @@
 Este diagrama representa **exatamente o protótipo Arduino testado** e, separadamente, a **proposta de conectividade da equipe** para a Global Solution 2026/2. A ligação celular/MQTT **não foi implementada no Tinkercad**; a mensagem é exibida no Monitor Serial.
 
 ```mermaid
+# Diagrama de arquitetura e comunicação — Tomada Vital
+
+Este diagrama representa o protótipo Arduino testado e, separadamente, a proposta de conectividade da equipe para a Global Solution 2026/2.
+
+```mermaid
 flowchart TB
+
     subgraph P["01 · PROTÓTIPO TESTADO NO TINKERCAD"]
-      IN["ENTRADAS SIMULADAS<br/>Chave deslizante D2<br/>Potenciômetro A0"]
-      UNO["ARDUINO UNO · TV-001<br/>Leitura de energia e bateria<br/>Autonomia = 480 × bateria/100<br/>− minutos desde a queda"]
-      LED["SAÍDAS LOCAIS<br/>LED verde D9<br/>LED amarelo D10<br/>LED vermelho D11<br/>Buzzer D8"]
-      SERIAL["MONITOR SERIAL · 9600 baud<br/>TV-001;QUEDA;...;prioridade=CRITICA"]
-      IN -->|sinais| UNO
-      UNO -->|sinalização| LED
-      UNO -->|eventos| SERIAL
+        direction LR
+
+        IN["ENTRADAS SIMULADAS<br/><br/>• Chave deslizante → D2<br/>• Potenciômetro → A0"]
+
+        UNO["ARDUINO UNO · TV-001<br/><br/>• Leitura de energia e bateria<br/>• Cálculo de autonomia<br/>• Classificação de prioridade"]
+
+        LED["SAÍDAS LOCAIS<br/><br/>• LED verde → D9<br/>• LED amarelo → D10<br/>• LED vermelho → D11<br/>• Buzzer → D8"]
+
+        SERIAL["MONITOR SERIAL · 9600 baud<br/><br/>Exemplo de evento:<br/>TV-001;QUEDA;...;<br/>prioridade=CRITICA"]
+
+        IN -->|sinais| UNO
+        UNO -->|sinalização| LED
+        UNO -->|eventos| SERIAL
     end
+
     subgraph N["02 · COMUNICAÇÃO EM REDE PROPOSTA — NÃO IMPLEMENTADA NO TINKERCAD"]
-      CELL["Módulo de comunicação celular<br/>(hardware futuro)"]
-      NET["Rede celular / Internet"]
-      MQTT["Broker MQTT<br/>tomadavital/TV-001/eventos"]
-      BRIDGE["Serviço integrador<br/>MQTT → HTTP / JSON"]
-      API["API JAVA DA EQUIPE<br/>POST /api/ocorrencias<br/>Registra ocorrência e prioridade"]
-      APP["Sistema / aplicativo<br/>Ocorrência e fila de atendimento"]
-      CELL -->|dados móveis| NET
-      NET -->|MQTT| MQTT
-      MQTT -->|evento| BRIDGE
-      BRIDGE -->|HTTP POST| API
-      API -->|consulta / resposta| APP
+        direction LR
+
+        CELL["Módulo celular<br/><br/>(hardware futuro)"]
+
+        NET["Rede celular<br/>e Internet"]
+
+        MQTT["Broker MQTT<br/><br/>Tópico previsto:<br/>tomadavital/TV-001/eventos"]
+
+        BRIDGE["Serviço integrador<br/><br/>Conversão de<br/>MQTT → HTTP / JSON"]
+
+        API["API Java da equipe<br/><br/>Endpoint previsto:<br/>POST /api/ocorrencias"]
+
+        APP["Sistema / aplicativo<br/><br/>Visualização da ocorrência<br/>e fila de atendimento"]
+
+        CELL -->|dados móveis| NET
+        NET -->|MQTT| MQTT
+        MQTT -->|evento| BRIDGE
+        BRIDGE -->|HTTP POST| API
+        API -->|consulta / resposta| APP
     end
+
     SERIAL -.->|mensagem que seria transmitida| CELL
+
     classDef atual fill:#d9f0e9,stroke:#238879,color:#17324d;
     classDef planejado fill:#fff3dc,stroke:#d29c43,color:#664619,stroke-dasharray:5 4;
-    class UNO,IN,LED,SERIAL atual;
+
+    class IN,UNO,LED,SERIAL atual;
     class CELL,NET,MQTT,BRIDGE,API,APP planejado;
 ```
 
