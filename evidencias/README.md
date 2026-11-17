@@ -4,7 +4,7 @@ Esta pasta reúne **seis capturas originais, em sequência**, feitas na simulaç
 
 ## Circuito compartilhado no Tinkercad
 
-**[Abrir a simulação original da Tomada Vital](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=KehezaO_vzByj0qiHezNVwroZzdfyHgXVT1UZCgLfPk)**
+**[Abrir a simulação original da Tomada Vital](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=o65KUUcEojXKD6Cn6BC4HaEw2s_Gv3T1Dquyp1OA2sM)**
 
 O link permite acessar a montagem compartilhada pela equipe para acompanhar as evidências abaixo e tentar reproduzir os testes. O código-fonte também está disponível na [raiz do repositório](../tomada_vital.ino).
 
