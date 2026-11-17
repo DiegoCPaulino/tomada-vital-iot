@@ -71,7 +71,7 @@ Os nomes de prioridade não usam acentos no código porque seguem o padrão de i
 | 4. Queda com ~20% | Restabelecer, ajustar a bateria e simular nova queda | LED vermelho e buzzer; CRITICA |
 | 5. Restabelecimento | Voltar a chave para 5V | LED verde; buzzer para; `TV-001;RESTABELECIDO` |
 
-**Observações dos testes realizados no Tinkercad (16/11/2026):** foi observado o LED verde durante energia normal, o LED amarelo ao mudar a chave, mensagens de prioridade `ALTA`, `MODERADA` e `CRITICA` no Monitor Serial, acionamento audível do buzzer na prioridade crítica e emissão de `TV-001;RESTABELECIDO` com retorno ao LED verde. Os resultados são de simulação, não de testes com equipamentos médicos reais. As capturas de tela ainda devem ser adicionadas ao repositório.
+**Observações dos testes realizados no Tinkercad (16/11/2026):** foi observado o LED verde durante energia normal, o LED amarelo ao mudar a chave, mensagens de prioridade `ALTA`, `MODERADA` e `CRITICA` no Monitor Serial, acionamento audível do buzzer na prioridade crítica e emissão de `TV-001;RESTABELECIDO` com retorno ao LED verde. Os resultados são de simulação, não de testes com equipamentos médicos reais. As capturas originais dos testes estão publicadas em [Evidências da simulação](evidencias/README.md).
 
 Trechos observados no Monitor Serial:
 
@@ -140,7 +140,7 @@ A API Java da solução maior é responsável por registrar a ocorrência e inte
 - O Tinkercad usado não realiza a comunicação celular/MQTT proposta; a saída disponível no protótipo é a Serial.
 - O cálculo de autonomia é simplificado e usa parâmetros acadêmicos. Não deve ser empregado para determinar a segurança de pacientes ou de equipamentos de suporte à vida.
 - Não foram medidos disponibilidade de rede, latência MQTT, consumo real de energia ou confiabilidade de alarmes em campo.
-- É necessário complementar a entrega com imagens de circuito, evidências completas dos testes e um diagrama visual de arquitetura.
+- O circuito e os testes estão documentados nas [evidências](evidencias/README.md); o [diagrama de arquitetura](docs/arquitetura.md) distingue o protótipo executado da rede apenas proposta.
 
 ## Relação com CitizenTech
 
