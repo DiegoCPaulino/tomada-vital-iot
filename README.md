@@ -83,6 +83,11 @@ TV-001;RESTABELECIDO
 
 O valor dos minutos restantes depende da bateria selecionada e do tempo decorrido desde a queda. Para reiniciar o tempo da ocorrência, volte a chave ao estado de energia normal antes de simular outra queda.
 
+
+## Diagrama visual de arquitetura
+
+O diagrama separa o protótipo efetivamente testado no Tinkercad da comunicação celular/MQTT proposta pela equipe. **[Abrir diagrama de arquitetura e rede](docs/arquitetura.md)**.
+
 ## Arquitetura de comunicação proposta
 
 **Importante:** a comunicação em rede descrita nesta seção é **uma proposta de integração**, não uma função já implementada no Arduino do Tinkercad.
