@@ -5,7 +5,7 @@
 
 ## Simulação do circuito no Tinkercad
 
-**[Abrir circuito compartilhado da Tomada Vital no Tinkercad](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=KehezaO_vzByj0qiHezNVwroZzdfyHgXVT1UZCgLfPk)**
+**[Abrir circuito compartilhado da Tomada Vital no Tinkercad](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=o65KUUcEojXKD6Cn6BC4HaEw2s_Gv3T1Dquyp1OA2sM)**
 
 O circuito contém a montagem Arduino UNO com os componentes e o código usados nos testes da Global Solution. Para reproduzir os cenários, utilize o interruptor deslizante, o potenciômetro e o Monitor Serial, seguindo as instruções deste README e os [registros dos testes](evidencias/README.md).
 
