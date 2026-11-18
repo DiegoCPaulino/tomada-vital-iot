@@ -10,8 +10,6 @@
 
 O circuito contém a montagem Arduino UNO com os componentes e o código usados nos testes da Global Solution. Para reproduzir os cenários, utilize o interruptor deslizante, o potenciômetro e o Monitor Serial, seguindo as instruções deste README e os [registros dos testes](evidencias/README.md).
 
-> Link de compartilhamento fornecido pela equipe. Confirme que ele abre em uma janela anônima antes da entrega, pois links de colaboração podem ter restrições ou expirar.
-
 ## Proposta
 
 A Tomada Vital é uma proposta de monitoramento de quedas de energia em equipamentos médicos que dependem de alimentação elétrica. O protótipo demonstra, com um **Arduino UNO simulado no Tinkercad**, como identificar uma queda, estimar a autonomia de uma bateria e sinalizar a prioridade do evento.
@@ -87,7 +85,7 @@ Os nomes de prioridade não usam acentos no código porque seguem o padrão de i
 Trechos observados no Monitor Serial:
 
 ```text
-TV-001;QUEDA;bateria=35;restante=116;prioridade=CRITICA
+TV-001;QUEDA;bateria=35;restante=110;prioridade=CRITICA
 TV-001;QUEDA;bateria=34;restante=103;prioridade=CRITICA
 TV-001;RESTABELECIDO
 ```
@@ -182,4 +180,4 @@ O impacto operacional ainda depende de validações em condições reais.
 
 ## Uso de IA generativa
 
-Ferramentas de IA generativa foram utilizadas como apoio à organização documental e à explicação das conexões e dos testes. A equipe deve revisar as informações e demonstrar domínio da implementação durante a apresentação.
+Usamos ferramentas de IA generativa como apoio na organização e na revisão da documentação. O código, o circuito e os testes foram executados e conferidos por nós no Tinkercad.

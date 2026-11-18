@@ -1,14 +1,12 @@
 # Evidências do protótipo — Tomada Vital
 
-Esta pasta reúne **seis capturas originais, em sequência**, feitas na simulação Arduino UNO no Tinkercad. Os comentários abaixo explicam os resultados registrados, sem modificar as imagens ou acrescentar dados fictícios.
+Esta pasta reúne **seis capturas originais, em sequência**, feitas na simulação Arduino UNO no Tinkercad. Cada captura vem acompanhada do que ela mostra.
 
 ## Circuito compartilhado no Tinkercad
 
 **[Abrir a simulação original da Tomada Vital](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=o65KUUcEojXKD6Cn6BC4HaEw2s_Gv3T1Dquyp1OA2sM)**
 
-O link permite acessar a montagem compartilhada pela equipe para acompanhar as evidências abaixo e tentar reproduzir os testes. O código-fonte também está disponível na [raiz do repositório](../tomada_vital.ino).
-
-> Confira a acessibilidade em uma janela anônima antes da entrega. O acesso por link de colaboração pode depender de permissões ou validade.
+O link abre a nossa montagem para acompanhar as evidências abaixo e tentar reproduzir os testes. O código-fonte também está disponível na [raiz do repositório](../tomada_vital.ino).
 
 ## 01 — Circuito geral
 
