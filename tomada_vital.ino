@@ -16,6 +16,7 @@ const long LIMITE_ALTA = 360;           // ate 6 h = ALTA; acima disso = MODERAD
 
 bool emQueda = false;
 unsigned long inicioQueda = 0;
+long bateriaNaQueda = 0;        // bateria lida no momento da queda (igual a API)
 String ultimaPrioridade = "";
 
 void setup() {
@@ -55,18 +56,19 @@ void loop() {
     }
     acenderLeds(true, false, false);
   } else {
-    int leitura = analogRead(PINO_BATERIA);
-    long bateria = map(leitura, 0, 1023, 0, 100);
-
     if (!emQueda) {
       emQueda = true;
       inicioQueda = millis();
       ultimaPrioridade = "";
+      // A bateria e lida uma vez so, quando a luz cai. Depois disso, o gasto
+      // e descontado pelo tempo que passou (se relesse a bateria, contaria duas vezes).
+      int leitura = analogRead(PINO_BATERIA);
+      bateriaNaQueda = map(leitura, 0, 1023, 0, 100);
     }
 
     // Na simulacao, 1 segundo real vale 1 minuto.
     long passados = (millis() - inicioQueda) / 1000;
-    long restantes = AUTONOMIA_TOTAL_MIN * bateria / 100 - passados;
+    long restantes = AUTONOMIA_TOTAL_MIN * bateriaNaQueda / 100 - passados;
     if (restantes < 0) {
       restantes = 0;
     }
@@ -74,7 +76,7 @@ void loop() {
 
     // Envia quando a prioridade muda e, depois, a cada 15 "minutos".
     if (prioridade != ultimaPrioridade || passados % 15 == 0) {
-      Serial.println(DISPOSITIVO + ";QUEDA;bateria=" + String(bateria) + ";restante="
+      Serial.println(DISPOSITIVO + ";QUEDA;bateria=" + String(bateriaNaQueda) + ";restante="
                      + String(restantes) + ";prioridade=" + prioridade);
       ultimaPrioridade = prioridade;
     }

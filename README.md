@@ -47,8 +47,10 @@ Arquivo de código: [`tomada_vital.ino`](tomada_vital.ino).
 Quando a energia está presente, o LED verde fica aceso. Na queda, a bateria simulada é lida pela entrada A0 e o Arduino calcula:
 
 ```text
-minutos_restantes = max(0, 480 * percentual_bateria / 100 - minutos_desde_a_queda)
+minutos_restantes = max(0, 480 * bateria_na_queda / 100 - minutos_desde_a_queda)
 ```
+
+A bateria é lida **uma única vez, no instante da queda**. Depois disso, o consumo é descontado pelo tempo que passou. É a mesma regra da API Java da solução, que recebe a bateria do momento do alerta. Reler a bateria a cada segundo e ainda descontar o tempo contaria o gasto duas vezes. Por isso, mexer no potenciômetro durante uma queda não altera o cálculo: para testar outra bateria, restabeleça a energia, ajuste o potenciômetro e simule uma nova queda.
 
 Para acelerar os testes, **1 segundo da simulação representa 1 minuto**.
 
