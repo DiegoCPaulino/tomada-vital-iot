@@ -1,6 +1,6 @@
 # Evidências do protótipo — Tomada Vital
 
-Esta pasta reúne **seis capturas originais, em sequência**, feitas na simulação Arduino UNO no Tinkercad. Cada captura vem acompanhada do que ela mostra.
+Esta página reúne a montagem original e **cinco capturas dos testes com o código Arduino 2.0**, feitas no Tinkercad em 18/11/2026. Os resultados abaixo são extraídos diretamente das capturas e descrevem apenas o que foi observado.
 
 ## Circuito compartilhado no Tinkercad
 
@@ -14,35 +14,35 @@ O link abre a nossa montagem para acompanhar as evidências abaixo e tentar repr
 
 Montagem com Arduino UNO, chave deslizante (D2), potenciômetro (A0), LED verde (D9), amarelo (D10), vermelho (D11), resistores de 220 Ω e buzzer (D8).
 
-## 02 — Inicialização e restabelecimento
+## 02 — Inicialização do sistema
 
-<a href="./02-inicio-e-restabelecimento.png"><img src="./02-inicio-e-restabelecimento.png" alt="Inicialização e restabelecimento" width="100%"></a>
+<a href="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/02-inicializacao.png"><img src="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/02-inicializacao.png" alt="Inicialização do Arduino no Tinkercad" width="100%"></a>
 
-O Monitor Serial registra `TV-001;INICIO;monitorando a energia`, um evento `QUEDA` com 100% de bateria e 480 minutos restantes, seguido de `TV-001;RESTABELECIDO`.
+Com a simulação iniciada e a chave na posição de energia disponível, o Monitor Serial registra `TV-001;INICIO;monitorando a energia`. O LED verde indica energia normal.
 
-## 03 — Prioridade MODERADA
+## 03 — Queda com prioridade MODERADA
 
-<a href="./03-prioridade-moderada.png"><img src="./03-prioridade-moderada.png" alt="Prioridade moderada" width="100%"></a>
+<a href="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/03-prioridade-moderada.png"><img src="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/03-prioridade-moderada.png" alt="Queda com prioridade MODERADA" width="100%"></a>
 
-O Monitor Serial registra `TV-001;QUEDA;bateria=100;restante=480;prioridade=MODERADA`. Essa classificação corresponde a mais de 360 minutos restantes.
+Com bateria simulada em 100%, a queda gera `TV-001;QUEDA;bateria=100;restante=480;prioridade=MODERADA`. A autonomia acima de 360 minutos corresponde à faixa MODERADA; o LED amarelo sinaliza a queda.
 
-## 04 — Transição para prioridade ALTA
+## 04 — Queda com prioridade ALTA
 
-<a href="./04-prioridade-alta.png"><img src="./04-prioridade-alta.png" alt="Prioridade alta" width="100%"></a>
+<a href="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/04-prioridade-alta.png"><img src="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/04-prioridade-alta.png" alt="Queda com prioridade ALTA" width="100%"></a>
 
-O histórico mostra a transição de MODERADA para ALTA, incluindo `bateria=79;restante=354;prioridade=ALTA` e `bateria=49;restante=190;prioridade=ALTA`.
+Depois do restabelecimento e de uma nova queda com bateria em 75%, o Monitor Serial registra `TV-001;QUEDA;bateria=75;restante=360;prioridade=ALTA`, seguido por mensagens com `restante=345`, `330` e `315`, mantendo `bateria=75`. O LED amarelo sinaliza essa prioridade, válida de 121 a 360 minutos restantes.
 
-## 05 — Prioridade CRITICA com buzzer
+## 05 — Queda com prioridade CRITICA e buzzer
 
-<a href="./05-prioridade-critica-buzzer.png"><img src="./05-prioridade-critica-buzzer.png" alt="Prioridade crítica e buzzer" width="100%"></a>
+<a href="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/05-prioridade-critica-buzzer.png"><img src="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/05-prioridade-critica-buzzer.png" alt="Queda com prioridade CRITICA e buzzer" width="100%"></a>
 
-A imagem mostra a indicação visual de emissão de som no buzzer e mensagens como `bateria=35;restante=110;prioridade=CRITICA` e `bateria=34;restante=103;prioridade=CRITICA`.
+Após nova queda com bateria simulada em 13%, o Monitor Serial registra `TV-001;QUEDA;bateria=13;restante=62;prioridade=CRITICA` e depois `bateria=13;restante=47;prioridade=CRITICA`. A captura mostra a indicação de emissão de som no buzzer. A faixa CRITICA abrange autonomia de até 120 minutos, com LED vermelho e alerta sonoro.
 
-## 06 — Histórico consolidado do Monitor Serial
+## 06 — Histórico do Monitor Serial e restabelecimento final
 
-<a href="./06-monitor-serial-consolidado.png"><img src="./06-monitor-serial-consolidado.png" alt="Histórico do Monitor Serial" width="100%"></a>
+<a href="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/06-monitor-serial-consolidado.png"><img src="./Tomada_Vital_2_0_Prints_Atualizados_GitHub/06-monitor-serial-consolidado.png" alt="Monitor Serial com prioridades e restabelecimento final" width="100%"></a>
 
-O registro mostra as prioridades MODERADA, ALTA e CRITICA e o restabelecimento da energia. Inclui também `bateria=16;restante=1;prioridade=CRITICA`.
+O histórico mostra o ciclo de mensagens MODERADA (100%), ALTA (75%) e CRITICA (13%), seguido de `TV-001;RESTABELECIDO`. Nas mensagens registradas para cada queda, o percentual de bateria se mantém constante enquanto a autonomia diminui. **As capturas não comprovam isoladamente o teste adicional de girar o potenciômetro durante uma mesma queda**.
 
 ## Critérios de validação
 
