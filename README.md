@@ -1,6 +1,7 @@
 # Tomada Vital — IoT | Global Solution FIAP 2026/2
 
-**Disciplina:** Disruptive Architectures: IoT, IoB & Generative IA  
+**Disciplina:** Disruptive Architectures: IoT, IoB & Generative AI  
+**Turma:** 2TDSPR  
 **Tema da Global Solution:** CitizenTech
 
 ## Simulação do circuito no Tinkercad
@@ -22,7 +23,7 @@ O cenário didático usa o dispositivo **TV-001**, um concentrador de oxigênio 
 | Integrante | RM |
 |---|---|
 | Diego Paulino | 566841 |
-| Guilherme Dabul | 559901 |
+| Guilherme Alves Dabul | 559901 |
 | Renan Lima | 568321 |
 | Ryan Mazali | 567168 |
 | Thiago Alexandre | 567486 |
@@ -170,7 +171,14 @@ A API recalcula os minutos restantes e a prioridade com a mesma regra do Arduino
 
 ## Relação com CitizenTech
 
-A proposta busca apoiar cidadãos que dependem de equipamentos médicos elétricos, usando monitoramento e informação de prioridade para fundamentar um fluxo de atendimento. A ideia se relaciona principalmente aos **ODS 3 (Saúde e Bem-Estar)** e **ODS 9 (Indústria, Inovação e Infraestrutura)**. O impacto operacional ainda depende de validações em condições reais.
+A proposta busca apoiar cidadãos que dependem de equipamentos médicos elétricos, usando monitoramento e informação de prioridade para fundamentar um fluxo de atendimento. A ideia se relaciona aos seguintes ODS:
+
+- **ODS 3 (Saúde e Bem-Estar):** protege quem depende de equipamento médico elétrico em casa.
+- **ODS 9 (Indústria, Inovação e Infraestrutura):** usa IoT e rede celular para dar informação em tempo real durante falhas de infraestrutura.
+- **ODS 11 (Cidades e Comunidades Sustentáveis):** torna a resposta a apagões urbanos mais resiliente.
+- **ODS 13 (Ação Contra a Mudança Global do Clima):** apoia a adaptação a eventos climáticos extremos, como os temporais que causaram os grandes apagões em São Paulo.
+
+O impacto operacional ainda depende de validações em condições reais.
 
 ## Uso de IA generativa
 
