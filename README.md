@@ -70,28 +70,29 @@ Os nomes de prioridade não usam acentos no código porque seguem o padrão de i
 5. Iniciar a simulação e abrir o **Monitor Serial** a **9600 baud**.
 6. Alternar o interruptor e o potenciômetro para testar os cenários abaixo.
 
-## Testes funcionais
+## Testes funcionais — simulação Arduino 2.0
 
-| Cenário | Ação | Comportamento esperado |
-|---|---|---|
-| 1. Energia normal | Chave em 5V | LED verde; mensagem inicial |
-| 2. Queda com 100% | Chave em GND, bateria em 100% | LED amarelo; MODERADA |
-| 3. Queda com ~60% | Restabelecer, ajustar a bateria e simular nova queda | LED amarelo; ALTA |
-| 4. Queda com ~20% | Restabelecer, ajustar a bateria e simular nova queda | LED vermelho e buzzer; CRITICA |
-| 5. Restabelecimento | Voltar a chave para 5V | LED verde; buzzer para; `TV-001;RESTABELECIDO` |
+| Cenário | Ação | Comportamento esperado | Resultado observado em 18/11/2026 |
+|---|---|---|---|
+| 1. Energia normal | Chave em 5V | LED verde e mensagem inicial | LED verde; `TV-001;INICIO;monitorando a energia` |
+| 2. Queda com 100% | Chave em GND com bateria em 100% | LED amarelo, MODERADA | `bateria=100;restante=480;prioridade=MODERADA` |
+| 3. Queda com 75% | Restabelecer, ajustar bateria e provocar nova queda | LED amarelo, ALTA | `bateria=75;restante=360;prioridade=ALTA` |
+| 4. Queda com 13% | Restabelecer, ajustar bateria e provocar nova queda | LED vermelho e buzzer, CRITICA | `bateria=13;restante=62;prioridade=CRITICA`; buzzer indicado como ativo |
+| 5. Restabelecimento | Voltar a chave para 5V | LED verde; buzzer desligado; mensagem de retorno | `TV-001;RESTABELECIDO` no histórico enviado pela equipe |
+| 6. Atualização da bateria durante a mesma queda | Girar potenciômetro com chave em GND | Valor inicial de bateria permanece fixo; restante diminui | Não validado isoladamente nas capturas; permanece como teste complementar |
 
-**Observações dos testes realizados no Tinkercad (16/11/2026):** foi observado o LED verde durante energia normal, o LED amarelo ao mudar a chave, mensagens de prioridade `ALTA`, `MODERADA` e `CRITICA` no Monitor Serial, acionamento audível do buzzer na prioridade crítica e emissão de `TV-001;RESTABELECIDO` com retorno ao LED verde. Os resultados são de simulação, não de testes com equipamentos médicos reais. As capturas originais dos testes estão publicadas em [Evidências da simulação](evidencias/README.md).
+**Observações dos testes realizados no Tinkercad (18/11/2026):** a equipe documentou os estados MODERADA, ALTA e CRITICA com o código atualizado. No histórico de cada ocorrência o valor de `bateria` permaneceu constante e o tempo restante diminuiu. O teste específico de girar o potenciômetro durante a mesma queda não foi comprovado pelas capturas. O Monitor Serial também registrou o restabelecimento da energia. Os resultados são de simulação, não de testes em equipamentos médicos reais. Consulte as [Evidências da simulação](evidencias/README.md).
 
-Trechos observados no Monitor Serial:
+Trechos registrados no Monitor Serial:
 
 ```text
-TV-001;QUEDA;bateria=35;restante=110;prioridade=CRITICA
-TV-001;QUEDA;bateria=34;restante=103;prioridade=CRITICA
+TV-001;QUEDA;bateria=100;restante=480;prioridade=MODERADA
+TV-001;QUEDA;bateria=75;restante=360;prioridade=ALTA
+TV-001;QUEDA;bateria=13;restante=62;prioridade=CRITICA
 TV-001;RESTABELECIDO
 ```
 
-O valor dos minutos restantes depende da bateria selecionada e do tempo decorrido desde a queda. Para reiniciar o tempo da ocorrência, volte a chave ao estado de energia normal antes de simular outra queda.
-
+Para reiniciar o tempo da ocorrência, volte a chave ao estado de energia normal antes de simular outra queda.
 
 ## Diagrama visual de arquitetura
 
