@@ -96,44 +96,58 @@ O valor dos minutos restantes depende da bateria selecionada e do tempo decorrid
 
 ## Diagrama visual de arquitetura
 
-O diagrama separa o protótipo efetivamente testado no Tinkercad da comunicação celular/MQTT proposta pela equipe. **[Abrir diagrama de arquitetura e rede](docs/arquitetura.md)**.
+O diagrama separa o protótipo efetivamente testado no Tinkercad da comunicação celular/MQTT proposta. **[Abrir diagrama de arquitetura e rede](docs/arquitetura.md)**.
 
 ## Arquitetura de comunicação proposta
 
-**Importante:** a comunicação em rede descrita nesta seção é **uma proposta de integração**, não uma função já implementada no Arduino do Tinkercad.
+**Importante:** esta seção descreve uma **proposta**. O Tinkercad não tem módulo celular nem acesso à internet; no protótipo, cada evento aparece no Monitor Serial.
 
 ```text
 Sensores simulados (chave + potenciômetro)
                   |
-             Arduino UNO
+       Arduino UNO (TV-001)  <-- bateria própria do dispositivo
                   |
-      Saída Serial (implementada)
+     Saída Serial (implementada no protótipo)
                   |
-    Módulo celular (proposto para uso real)
+   Módulo celular NB-IoT ou LTE-M (proposto)
                   |
-          Rede celular / Internet
+  Rede da operadora (independe do Wi-Fi da casa)
                   |
-             Broker MQTT
-     tomadavital/TV-001/eventos
+     Broker MQTT com TLS (porta 8883)
+       tópico tomadavital/TV-001/eventos
                   |
-           Serviço integrador
+  API Java (assina o tópico e registra a ocorrência)
                   |
-              API Java
-        POST /api/ocorrencias
-                  |
-        Banco de dados / App
+     Fila do operador e app da família
+
+  Plano B: SMS quando a rede de dados falhar
 ```
 
-A mensagem enviada pela Serial representa o evento que um módulo de comunicação poderia publicar no broker MQTT. Na arquitetura proposta pela equipe, esse evento seria convertido em uma chamada HTTP:
+### Por que cada escolha
 
-```http
-POST /api/ocorrencias
-Content-Type: application/json
+- **Rede celular, e não Wi-Fi:** quando a luz cai, o roteador e o modem da casa também desligam. Um alerta que dependesse do Wi-Fi falharia justamente quando é necessário.
+- **Bateria própria no dispositivo:** o dispositivo precisa continuar ligado durante o apagão para conseguir medir e avisar.
+- **NB-IoT ou LTE-M:** são tecnologias celulares feitas para IoT. Consomem pouca energia (o que prolonga a bateria do dispositivo), têm boa cobertura dentro de casas e bastam para mensagens pequenas como a do alerta. A escolha entre as duas depende da cobertura da operadora no endereço.
+- **MQTT:** protocolo leve de publicação e assinatura, adequado a dispositivos com pouca energia e a conexões instáveis. Com QoS 1, o broker confirma o recebimento e o dispositivo reenvia a mensagem se a confirmação não chegar.
+- **TLS na porta 8883:** o alerta revela que alguém na casa usa equipamento vital, um dado pessoal sensível de saúde pela LGPD. Por isso, a comunicação é criptografada.
+- **SMS como plano B:** se a rede de dados estiver indisponível ou congestionada, o dispositivo envia um SMS curto, que usa um canal diferente da rede de dados.
+- **Sinal de vida:** além dos alertas, o dispositivo publica periodicamente (por exemplo, a cada 15 minutos) uma mensagem de status. Se ela parar de chegar, a central sabe que o dispositivo está sem sinal ou sem bateria.
 
+### Mensagem do alerta
+
+No protótipo, cada evento aparece no Monitor Serial em texto, por exemplo:
+
+```text
+TV-001;QUEDA;bateria=20;restante=96;prioridade=CRITICA
+```
+
+Na versão proposta, o dispositivo publicaria no tópico `tomadavital/TV-001/eventos` apenas os dados de que a API precisa — o código do dispositivo e a bateria no momento da queda —, no mesmo formato que a nossa API Java já recebe no endpoint `POST /api/ocorrencias`:
+
+```json
 { "codigoDispositivo": "TV-001", "bateriaPercentual": 20 }
 ```
 
-A API Java da solução maior é responsável por registrar a ocorrência e integrar a classificação ao fluxo de atendimento. O exemplo de integração está documentado pela equipe; sua execução ponta a ponta não foi comprovada nesta entrega de IoT.
+A API recalcula os minutos restantes e a prioridade com a mesma regra do Arduino e coloca a ocorrência na fila de atendimento. O código da API Java está em https://github.com/DiegoCPaulino/API-Tomada-Vital. A ligação entre o broker e a API é uma proposta e não foi implementada nesta entrega.
 
 ## Decisões técnicas
 
@@ -142,7 +156,8 @@ A API Java da solução maior é responsável por registrar a ocorrência e inte
 - **Potenciômetro:** permite variar a bateria manualmente e testar os diferentes limiares.
 - **LEDs e buzzer:** proporcionam retorno visual e sonoro ao estado monitorado.
 - **Monitor Serial:** torna os eventos verificáveis no Tinkercad e representa a origem dos dados para a integração proposta.
-- **MQTT e rede celular (propostos):** permitem conceber o transporte de mensagens do dispositivo até os serviços de software sem depender da rede Wi-Fi local do paciente.
+- **Rede proposta:** as justificativas da rede celular, da bateria própria, do MQTT com TLS, do SMS e do sinal de vida estão em [Por que cada escolha](#por-que-cada-escolha).
+- **Bateria lida só no início da queda:** mantém a mesma regra da API Java e evita descontar o consumo duas vezes.
 
 ## Limitações e cuidados
 
@@ -151,6 +166,7 @@ A API Java da solução maior é responsável por registrar a ocorrência e inte
 - O cálculo de autonomia é simplificado e usa parâmetros acadêmicos. Não deve ser empregado para determinar a segurança de pacientes ou de equipamentos de suporte à vida.
 - Não foram medidos disponibilidade de rede, latência MQTT, consumo real de energia ou confiabilidade de alarmes em campo.
 - O circuito e os testes estão documentados nas [evidências](evidencias/README.md); o [diagrama de arquitetura](docs/arquitetura.md) distingue o protótipo executado da rede apenas proposta.
+- A leitura do percentual de bateria de um equipamento médico real depende do fabricante e pode não ser possível; no protótipo, o potenciômetro representa esse valor.
 
 ## Relação com CitizenTech
 
