@@ -1,6 +1,7 @@
 # Tomada Vital — IoT | Global Solution FIAP 2026/2
 
-**Disciplina:** Disruptive Architectures: IoT, IoB & Generative IA  
+**Disciplina:** Disruptive Architectures: IoT, IoB & Generative AI  
+**Turma:** 2TDSPR  
 **Tema da Global Solution:** CitizenTech
 
 ## Simulação do circuito no Tinkercad
@@ -8,8 +9,6 @@
 **[Abrir circuito compartilhado da Tomada Vital no Tinkercad](https://www.tinkercad.com/things/g958jGWu1qs-fantabulous-bruticus-kup/editel?returnTo=%2Fthings%2Fg958jGWu1qs-fantabulous-bruticus-kup&sharecode=o65KUUcEojXKD6Cn6BC4HaEw2s_Gv3T1Dquyp1OA2sM)**
 
 O circuito contém a montagem Arduino UNO com os componentes e o código usados nos testes da Global Solution. Para reproduzir os cenários, utilize o interruptor deslizante, o potenciômetro e o Monitor Serial, seguindo as instruções deste README e os [registros dos testes](evidencias/README.md).
-
-> Link de compartilhamento fornecido pela equipe. Confirme que ele abre em uma janela anônima antes da entrega, pois links de colaboração podem ter restrições ou expirar.
 
 ## Proposta
 
@@ -22,7 +21,7 @@ O cenário didático usa o dispositivo **TV-001**, um concentrador de oxigênio 
 | Integrante | RM |
 |---|---|
 | Diego Paulino | 566841 |
-| Guilherme Dabul | 559901 |
+| Guilherme Alves Dabul | 559901 |
 | Renan Lima | 568321 |
 | Ryan Mazali | 567168 |
 | Thiago Alexandre | 567486 |
@@ -47,8 +46,10 @@ Arquivo de código: [`tomada_vital.ino`](tomada_vital.ino).
 Quando a energia está presente, o LED verde fica aceso. Na queda, a bateria simulada é lida pela entrada A0 e o Arduino calcula:
 
 ```text
-minutos_restantes = max(0, 480 * percentual_bateria / 100 - minutos_desde_a_queda)
+minutos_restantes = max(0, 480 * bateria_na_queda / 100 - minutos_desde_a_queda)
 ```
+
+A bateria é lida **uma única vez, no instante da queda**. Depois disso, o consumo é descontado pelo tempo que passou. É a mesma regra da API Java da solução, que recebe a bateria do momento do alerta. Reler a bateria a cada segundo e ainda descontar o tempo contaria o gasto duas vezes. Por isso, mexer no potenciômetro durante uma queda não altera o cálculo: para testar outra bateria, restabeleça a energia, ajuste o potenciômetro e simule uma nova queda.
 
 Para acelerar os testes, **1 segundo da simulação representa 1 minuto**.
 
@@ -84,7 +85,7 @@ Os nomes de prioridade não usam acentos no código porque seguem o padrão de i
 Trechos observados no Monitor Serial:
 
 ```text
-TV-001;QUEDA;bateria=35;restante=116;prioridade=CRITICA
+TV-001;QUEDA;bateria=35;restante=110;prioridade=CRITICA
 TV-001;QUEDA;bateria=34;restante=103;prioridade=CRITICA
 TV-001;RESTABELECIDO
 ```
@@ -94,44 +95,58 @@ O valor dos minutos restantes depende da bateria selecionada e do tempo decorrid
 
 ## Diagrama visual de arquitetura
 
-O diagrama separa o protótipo efetivamente testado no Tinkercad da comunicação celular/MQTT proposta pela equipe. **[Abrir diagrama de arquitetura e rede](docs/arquitetura.md)**.
+O diagrama separa o protótipo efetivamente testado no Tinkercad da comunicação celular/MQTT proposta. **[Abrir diagrama de arquitetura e rede](docs/arquitetura.md)**.
 
 ## Arquitetura de comunicação proposta
 
-**Importante:** a comunicação em rede descrita nesta seção é **uma proposta de integração**, não uma função já implementada no Arduino do Tinkercad.
+**Importante:** esta seção descreve uma **proposta**. O Tinkercad não tem módulo celular nem acesso à internet; no protótipo, cada evento aparece no Monitor Serial.
 
 ```text
 Sensores simulados (chave + potenciômetro)
                   |
-             Arduino UNO
+       Arduino UNO (TV-001)  <-- bateria própria do dispositivo
                   |
-      Saída Serial (implementada)
+     Saída Serial (implementada no protótipo)
                   |
-    Módulo celular (proposto para uso real)
+   Módulo celular NB-IoT ou LTE-M (proposto)
                   |
-          Rede celular / Internet
+  Rede da operadora (independe do Wi-Fi da casa)
                   |
-             Broker MQTT
-     tomadavital/TV-001/eventos
+     Broker MQTT com TLS (porta 8883)
+       tópico tomadavital/TV-001/eventos
                   |
-           Serviço integrador
+  API Java (assina o tópico e registra a ocorrência)
                   |
-              API Java
-        POST /api/ocorrencias
-                  |
-        Banco de dados / App
+     Fila do operador e app da família
+
+  Plano B: SMS quando a rede de dados falhar
 ```
 
-A mensagem enviada pela Serial representa o evento que um módulo de comunicação poderia publicar no broker MQTT. Na arquitetura proposta pela equipe, esse evento seria convertido em uma chamada HTTP:
+### Por que cada escolha
 
-```http
-POST /api/ocorrencias
-Content-Type: application/json
+- **Rede celular, e não Wi-Fi:** quando a luz cai, o roteador e o modem da casa também desligam. Um alerta que dependesse do Wi-Fi falharia justamente quando é necessário.
+- **Bateria própria no dispositivo:** o dispositivo precisa continuar ligado durante o apagão para conseguir medir e avisar.
+- **NB-IoT ou LTE-M:** são tecnologias celulares feitas para IoT. Consomem pouca energia (o que prolonga a bateria do dispositivo), têm boa cobertura dentro de casas e bastam para mensagens pequenas como a do alerta. A escolha entre as duas depende da cobertura da operadora no endereço.
+- **MQTT:** protocolo leve de publicação e assinatura, adequado a dispositivos com pouca energia e a conexões instáveis. Com QoS 1, o broker confirma o recebimento e o dispositivo reenvia a mensagem se a confirmação não chegar.
+- **TLS na porta 8883:** o alerta revela que alguém na casa usa equipamento vital, um dado pessoal sensível de saúde pela LGPD. Por isso, a comunicação é criptografada.
+- **SMS como plano B:** se a rede de dados estiver indisponível ou congestionada, o dispositivo envia um SMS curto, que usa um canal diferente da rede de dados.
+- **Sinal de vida:** além dos alertas, o dispositivo publica periodicamente (por exemplo, a cada 15 minutos) uma mensagem de status. Se ela parar de chegar, a central sabe que o dispositivo está sem sinal ou sem bateria.
 
+### Mensagem do alerta
+
+No protótipo, cada evento aparece no Monitor Serial em texto, por exemplo:
+
+```text
+TV-001;QUEDA;bateria=20;restante=96;prioridade=CRITICA
+```
+
+Na versão proposta, o dispositivo publicaria no tópico `tomadavital/TV-001/eventos` apenas os dados de que a API precisa — o código do dispositivo e a bateria no momento da queda —, no mesmo formato que a nossa API Java já recebe no endpoint `POST /api/ocorrencias`:
+
+```json
 { "codigoDispositivo": "TV-001", "bateriaPercentual": 20 }
 ```
 
-A API Java da solução maior é responsável por registrar a ocorrência e integrar a classificação ao fluxo de atendimento. O exemplo de integração está documentado pela equipe; sua execução ponta a ponta não foi comprovada nesta entrega de IoT.
+A API recalcula os minutos restantes e a prioridade com a mesma regra do Arduino e coloca a ocorrência na fila de atendimento. O código da API Java está em https://github.com/DiegoCPaulino/API-Tomada-Vital. A ligação entre o broker e a API é uma proposta e não foi implementada nesta entrega.
 
 ## Decisões técnicas
 
@@ -140,7 +155,8 @@ A API Java da solução maior é responsável por registrar a ocorrência e inte
 - **Potenciômetro:** permite variar a bateria manualmente e testar os diferentes limiares.
 - **LEDs e buzzer:** proporcionam retorno visual e sonoro ao estado monitorado.
 - **Monitor Serial:** torna os eventos verificáveis no Tinkercad e representa a origem dos dados para a integração proposta.
-- **MQTT e rede celular (propostos):** permitem conceber o transporte de mensagens do dispositivo até os serviços de software sem depender da rede Wi-Fi local do paciente.
+- **Rede proposta:** as justificativas da rede celular, da bateria própria, do MQTT com TLS, do SMS e do sinal de vida estão em [Por que cada escolha](#por-que-cada-escolha).
+- **Bateria lida só no início da queda:** mantém a mesma regra da API Java e evita descontar o consumo duas vezes.
 
 ## Limitações e cuidados
 
@@ -149,11 +165,19 @@ A API Java da solução maior é responsável por registrar a ocorrência e inte
 - O cálculo de autonomia é simplificado e usa parâmetros acadêmicos. Não deve ser empregado para determinar a segurança de pacientes ou de equipamentos de suporte à vida.
 - Não foram medidos disponibilidade de rede, latência MQTT, consumo real de energia ou confiabilidade de alarmes em campo.
 - O circuito e os testes estão documentados nas [evidências](evidencias/README.md); o [diagrama de arquitetura](docs/arquitetura.md) distingue o protótipo executado da rede apenas proposta.
+- A leitura do percentual de bateria de um equipamento médico real depende do fabricante e pode não ser possível; no protótipo, o potenciômetro representa esse valor.
 
 ## Relação com CitizenTech
 
-A proposta busca apoiar cidadãos que dependem de equipamentos médicos elétricos, usando monitoramento e informação de prioridade para fundamentar um fluxo de atendimento. A ideia se relaciona principalmente aos **ODS 3 (Saúde e Bem-Estar)** e **ODS 9 (Indústria, Inovação e Infraestrutura)**. O impacto operacional ainda depende de validações em condições reais.
+A proposta busca apoiar cidadãos que dependem de equipamentos médicos elétricos, usando monitoramento e informação de prioridade para fundamentar um fluxo de atendimento. A ideia se relaciona aos seguintes ODS:
+
+- **ODS 3 (Saúde e Bem-Estar):** protege quem depende de equipamento médico elétrico em casa.
+- **ODS 9 (Indústria, Inovação e Infraestrutura):** usa IoT e rede celular para dar informação em tempo real durante falhas de infraestrutura.
+- **ODS 11 (Cidades e Comunidades Sustentáveis):** torna a resposta a apagões urbanos mais resiliente.
+- **ODS 13 (Ação Contra a Mudança Global do Clima):** apoia a adaptação a eventos climáticos extremos, como os temporais que causaram os grandes apagões em São Paulo.
+
+O impacto operacional ainda depende de validações em condições reais.
 
 ## Uso de IA generativa
 
-Ferramentas de IA generativa foram utilizadas como apoio à organização documental e à explicação das conexões e dos testes. A equipe deve revisar as informações e demonstrar domínio da implementação durante a apresentação.
+Usamos ferramentas de IA generativa como apoio na organização e na revisão da documentação. O código, o circuito e os testes foram executados e conferidos por nós no Tinkercad.

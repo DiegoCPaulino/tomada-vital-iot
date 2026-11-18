@@ -1,6 +1,6 @@
 # Diagrama de arquitetura e comunicação — Tomada Vital
 
-O diagrama distingue o **protótipo testado no Tinkercad** da **rede proposta pela equipe**, ainda não implementada no simulador.
+O diagrama separa o **protótipo testado no Tinkercad** da **rede proposta**, que não foi implementada no simulador.
 
 ```mermaid
 flowchart TB
@@ -14,57 +14,60 @@ flowchart TB
       UNO -->|eventos| SERIAL
     end
     subgraph N["02 · REDE PROPOSTA — NÃO IMPLEMENTADA NO TINKERCAD"]
-      CELL["MÓDULO CELULAR<br/>Conectividade proposta"]
-      NET["REDE CELULAR<br/>Internet"]
-      MQTT["BROKER MQTT<br/>Recebe eventos"]
-      BRIDGE["INTEGRAÇÃO<br/>MQTT para HTTP"]
-      API["API JAVA<br/>POST /api/ocorrencias"]
-      APP["APLICATIVO<br/>Ocorrências e prioridades"]
+      BAT["BATERIA PRÓPRIA<br/>Mantém o dispositivo ligado no apagão"]
+      CELL["MÓDULO CELULAR<br/>NB-IoT ou LTE-M"]
+      NET["REDE DA OPERADORA<br/>Independe do Wi-Fi da casa"]
+      MQTT["BROKER MQTT<br/>TLS · porta 8883"]
+      API["API JAVA<br/>Assina o tópico e registra a ocorrência"]
+      APP["FILA DO OPERADOR<br/>e app da família"]
+      SMS["SMS<br/>Plano B sem rede de dados"]
+      BAT -.->|energia| CELL
       CELL --> NET
-      NET -->|MQTT| MQTT
-      MQTT --> BRIDGE
-      BRIDGE -->|HTTP POST| API
+      NET -->|"MQTT · tomadavital/TV-001/eventos"| MQTT
+      MQTT -->|evento| API
       API --> APP
+      CELL -.->|"se a rede de dados falhar"| SMS
     end
     SERIAL -.->|envio futuro| CELL
     classDef atual fill:#d9f0e9,stroke:#238879,color:#17324d;
     classDef planejado fill:#fff3dc,stroke:#d29c43,color:#664619,stroke-dasharray:5 4;
     class IN,UNO,LED,SERIAL atual;
-    class CELL,NET,MQTT,BRIDGE,API,APP planejado;
+    class BAT,CELL,NET,MQTT,API,APP,SMS planejado;
 ```
 
 ## Identificação dos componentes
 
 | Elemento | Implementado? | Papel |
 |---|---|---|
-| Chave deslizante D2 | Sim (simulado) | Presença/queda de energia |
-| Potenciômetro A0 | Sim (simulado) | Percentual de bateria |
+| Chave deslizante D2 | Sim (simulado) | Presença ou queda de energia |
+| Potenciômetro A0 | Sim (simulado) | Percentual de bateria do equipamento, lido no início da queda |
 | Arduino UNO | Sim (simulado) | Leitura, cálculo e classificação |
 | LEDs D9/D10/D11 e buzzer D8 | Sim (simulado) | Alertas locais |
 | Monitor Serial (9600 baud) | Sim | Exibe eventos e resultados |
-| Módulo celular | Não | Transporte de eventos na implantação proposta |
-| Rede celular e Internet | Não | Conectividade externa proposta |
-| Broker MQTT | Não | Recebe eventos no tópico previsto |
-| Serviço integrador | Não | Converte evento MQTT em requisição HTTP |
-| API Java e aplicativo | Não demonstrados nesta entrega IoT | Registro e visualização previstos pela equipe |
+| Bateria própria do dispositivo | Não | Mantém o dispositivo ligado durante o apagão |
+| Módulo celular NB-IoT ou LTE-M | Não | Envia os eventos sem depender do Wi-Fi da casa |
+| Rede da operadora | Não | Conectividade externa |
+| Broker MQTT com TLS (8883) | Não | Recebe os eventos no tópico `tomadavital/TV-001/eventos` |
+| SMS | Não | Plano B quando a rede de dados falhar |
+| API Java | Não neste protótipo | Assina o tópico, registra a ocorrência e monta a fila |
+| Fila do operador e app da família | Não neste protótipo | Atendimento e acompanhamento |
 
-## Mensagens e integração previstas pela equipe
+## Mensagens previstas
 
 Tópico MQTT proposto: `tomadavital/TV-001/eventos`
 
-Exemplo de evento do protótipo:
+Evento como aparece no Monitor Serial do protótipo:
 
 ```text
 TV-001;QUEDA;bateria=20;restante=96;prioridade=CRITICA
 ```
 
-Exemplo do envio ao endpoint da API Java indicado no material da equipe:
+Dados que o dispositivo publicaria na versão proposta, no mesmo formato que a nossa API Java recebe em `POST /api/ocorrencias`:
 
-```http
-POST /api/ocorrencias
-Content-Type: application/json
-
-{"codigoDispositivo":"TV-001","bateriaPercentual":20}
+```json
+{ "codigoDispositivo": "TV-001", "bateriaPercentual": 20 }
 ```
 
-**Limites e honestidade técnica:** o módulo celular e a comunicação MQTT são parte do desenho proposto, não do circuito executado no simulador; a API Java pertence ao projeto integrado da equipe. A bateria e o sensor de energia foram representados por componentes de simulação, e os limiares de autonomia são exemplos acadêmicos, não critérios médicos validados.
+## Limitações
+
+O módulo celular, a bateria própria, o broker MQTT e o SMS fazem parte do desenho proposto, não do circuito executado no simulador. A bateria e o sensor de energia são representados por componentes de simulação, e os limites de autonomia são exemplos acadêmicos, não critérios médicos validados.
